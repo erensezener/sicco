@@ -10,15 +10,23 @@ class Experiment(metaclass=ABCMeta):
 
     @abstractmethod
     def setup(self, config):
-        pass
+        raise NotImplementedError('The abstract methods in Experiment should be overriden')
 
     @abstractmethod
     def run(self):
-        pass
+        raise NotImplementedError('The abstract methods in Experiment should be overriden')
 
     @abstractmethod
     def get_output(self):
-        pass
+        raise NotImplementedError('The abstract methods in Experiment should be overriden')
+
+    @abstractmethod
+    def dump_model_files(self, path):
+        raise NotImplementedError('The abstract methods in Experiment should be overriden')
+
+    @abstractmethod
+    def dump_output_files(self, path):
+        raise NotImplementedError('The abstract methods in Experiment should be overriden')
 
 
 def timeit(func):
