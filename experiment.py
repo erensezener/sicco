@@ -1,12 +1,13 @@
 from functools import wraps
 from abc import ABCMeta, abstractmethod
-
+import utils
 import time
 
 
 class Experiment(metaclass=ABCMeta):
     def __init__(self):
         self.function_call_times = {}
+        self.uid = utils.get_uuid_hex_string()
 
     @abstractmethod
     def setup(self, config):
@@ -21,29 +22,21 @@ class Experiment(metaclass=ABCMeta):
         raise NotImplementedError('The abstract methods in Experiment should be overriden')
 
     @abstractmethod
-    def dump_model_files(self, path):
-        raise NotImplementedError('The abstract methods in Experiment should be overriden')
-
-    @abstractmethod
-    def dump_output_files(self, path):
+    def get_model_params(self):
         raise NotImplementedError('The abstract methods in Experiment should be overriden')
 
 
+# TODO check if args[0] is an instance of Experiment
 def timeit(func):
     """
-    This is a decorator for timing arbitrary methods.
+    This is a decorator for capturing the runtime of arbitrary methods.
     """
-
     @wraps(func)
     def newfunc(*args, **kwargs):
-        print('Dec called')
-
         self = args[0]
-
         start_time = time.time()
         func(*args, **kwargs)
         elapsed_time = time.time() - start_time
-
         self.function_call_times[func.__name__] = elapsed_time
 
     return newfunc
