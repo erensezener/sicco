@@ -43,6 +43,6 @@ config0 = SVMConfig()
 config1 = SVMConfig()
 
 experiment = SVMExperiment()
-runner = experiment_runner.ExperimentRunner(experiment, [config0, config1])
+runner = experiment_runner.ExperimentRunner(experiment, [config0, config1], files_to_backup='..')
 runner.run()
 runner.save()

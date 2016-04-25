@@ -57,9 +57,9 @@ class ExperimentRunner(object):
             pass
         else:
             extended_destination_path = self.output_path + '/' + destination_path + '/backup'
-            utils.create_dir_if_it_does_not_exists(extended_destination_path)
 
             if type(self.files_to_backup) is list:
+                utils.create_dir_if_it_does_not_exists(extended_destination_path)
                 for i, file in enumerate(self.files_to_backup):
                     if os.path.isdir(file):
                         shutil.copytree(file, extended_destination_path + '/' + str(i),
