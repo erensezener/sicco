@@ -3,11 +3,17 @@ import capturer
 import utils
 from pprint import pprint
 import shutil
-import types
+import os
 
 
 class ExperimentRunner(object):
     def __init__(self, experiment, config_list, output_path='./sicco_logs', files_to_backup='.'):
+        """
+        :param experiment: An object that inherits Experiment
+        :param config_list: A list of objects that inherit Config
+        :param output_path: The path where the experiment results will be dumped
+        :param files_to_backup: A path or a list of paths (both directories or files work) to backup
+        """
         self.experiment = experiment
         self.config_list = config_list
         self.log_list = []
@@ -45,16 +51,32 @@ class ExperimentRunner(object):
             utils.save_variables(exp_results_dir_path, model_params)
         self._copy_source_files(self.config_list[0].get_subdirectory_path)
 
+    #TODO this function is ugly. Refactor.
     def _copy_source_files(self, destination_path):
         if self.files_to_backup is None:
             pass
         else:
+            extended_destination_path = self.output_path + '/' + destination_path + '/backup'
+            utils.create_dir_if_it_does_not_exists(extended_destination_path)
+
             if type(self.files_to_backup) is list:
                 for i, file in enumerate(self.files_to_backup):
-                    shutil.copytree(file, self.output_path + '/' + destination_path + '/' + str(i))
+                    if os.path.isdir(file):
+                        shutil.copytree(file, extended_destination_path + '/' + str(i),
+                                        ignore=lambda x, y: self.output_path)
+                    elif os.path.isfile(file):
+                        file_name_without_directory = file.split('/')[-1]
+                        shutil.copyfile(file, extended_destination_path + '/' + file_name_without_directory)
+
             elif type(self.files_to_backup) is str:
-                shutil.copytree(self.files_to_backup, self.output_path + '/' + destination_path + '/backup',
-                                ignore=lambda x, y: self.output_path)
+                if os.path.isdir(self.files_to_backup):
+                    shutil.copytree(self.files_to_backup, extended_destination_path,
+                                    ignore=lambda x, y: self.output_path)
+
+                elif os.path.isfile(self.files_to_backup):
+                    file_name_without_directory = self.files_to_backup.split('/')[-1]
+                    shutil.copyfile(self.files_to_backup, extended_destination_path + '/' + file_name_without_directory)
+
             else:
                 raise RuntimeWarning('files_to_backup must be a string or a list of strings')
 
