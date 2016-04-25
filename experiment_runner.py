@@ -43,10 +43,7 @@ class ExperimentRunner(object):
             utils.create_dir_if_it_does_not_exists(exp_results_dir_path)
 
             with open(exp_results_dir_path + '/config' + str(i) + '.out', 'wt') as out:
-                pprint('Log:', stream=out)
-                pprint(vars(log), stream=out)
-                pprint('Config:', stream=out)
-                pprint(vars(config), stream=out)
+                pprint({'log': vars(log), 'config': vars(config)}, stream=out)
 
             utils.save_variables(exp_results_dir_path, model_params)
         self._copy_source_files(self.config_list[0].get_subdirectory_path)
