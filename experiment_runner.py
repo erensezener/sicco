@@ -1,6 +1,5 @@
 import warnings
-import capturer
-import utils
+from sicco import capturer, utils
 from pprint import pprint
 import shutil
 import os

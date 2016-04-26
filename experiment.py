@@ -1,6 +1,6 @@
 from functools import wraps
 from abc import ABCMeta, abstractmethod
-import utils
+from sicco import utils
 import time
 
 

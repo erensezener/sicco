@@ -1,8 +1,5 @@
-import experiment_runner
-import config
-import experiment
+from sicco import experiment_runner, config, experiment
 from sklearn import svm
-
 
 class SVMConfig(config.Config):
     def __init__(self):
@@ -31,6 +28,8 @@ class SVMExperiment(experiment.Experiment):
     def run(self):
         self.clf.fit(self.X_train, self.y_train)
         self.score = self.clf.score(self.X_test, self.y_test)
+        print('hi')
+        # raise Warning('yo')
 
     def get_output(self):
         return {'accuracy': self.score}

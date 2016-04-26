@@ -1,4 +1,4 @@
-import utils
+from sicco import utils
 
 
 class Config(object):
