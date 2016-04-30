@@ -19,6 +19,11 @@ def get_uuid_hex_string():
     return uuid.uuid4().hex
 
 
+def debug_log(log_text, debug_mode):
+    if debug_mode:
+        print('sicco: ' + log_text)
+
+
 def save_variables(log_path, variable_dict):
     """
     Saves variables (only meant for classes and numpy arrays).

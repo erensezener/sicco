@@ -6,7 +6,7 @@ import os
 
 
 class ExperimentRunner(object):
-    def __init__(self, experiment, config_list, output_path='./sicco_logs', files_to_backup='.'):
+    def __init__(self, experiment, config_list, output_path='./sicco_logs', files_to_backup='.', debug_mode = False):
         """
         :param experiment: An object that inherits Experiment
         :param config_list: A list of objects that inherit Config
@@ -19,12 +19,13 @@ class ExperimentRunner(object):
         self.model_params_list = []
         self.output_path = output_path
         self.files_to_backup = files_to_backup
+        self.debug_mode = debug_mode
 
     def run(self):
         """
         Runs an experiment for each config in the config_list.
         """
-        print('sicco: running an experiment')
+        utils.debug_log('running an experiment', self.debug_mode)
         for i, config in enumerate(self.config_list):
             # experiment related data is stored in self.experiment
             std_output_list, warnings_list, model_params = self._run_experiment(config)
@@ -33,10 +34,13 @@ class ExperimentRunner(object):
             self.log_list.append(log)
 
             self.model_params_list.append(model_params)
-            print('Config {} is complete'.format(i))
+            utils.debug_log('config {} is complete'.format(i), self.debug_mode)
+
+        utils.debug_log('running an experiment', self.debug_mode)
+
 
     def save(self):
-        print('sicco: starting the saving process')
+        utils.debug_log('saving the results', self.debug_mode)
         utils.create_dir_if_it_does_not_exists(self.output_path)
 
         for i, (log, config, model_params) in enumerate(zip(self.log_list, self.config_list, self.model_params_list)):
@@ -51,6 +55,8 @@ class ExperimentRunner(object):
 
     # TODO this function is ugly. Refactor.
     def _copy_source_files(self, destination_path):
+        utils.debug_log('in _copy_source_files', self.debug_mode)
+
         if self.files_to_backup is None:
             pass
         else:
@@ -78,14 +84,20 @@ class ExperimentRunner(object):
             else:
                 raise RuntimeWarning('files_to_backup must be a string or a list of strings')
 
+        utils.debug_log('exiting _copy_source_files', self.debug_mode)
+
     def _run_experiment(self, config):
         """
         Runs an experiment with a given config. Captures the warnings and std out writes.
         """
+        utils.debug_log('in _run_experiment', self.debug_mode)
+
         with capturer.Capturing() as std_output_list:  # capture the stdout of an experiment
             with warnings.catch_warnings(record=True) as warnings_list:
                 self.experiment.setup(config)
                 self.experiment.run()
+
+        utils.debug_log('exiting _run_experiment', self.debug_mode)
         return std_output_list, warnings_list, self.experiment.get_model_params()
 
     def _create_log_from_experiment_results(self, std_output_list, warnings_list):
