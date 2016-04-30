@@ -24,8 +24,8 @@ class ExperimentRunner(object):
         """
         Runs an experiment for each config in the config_list.
         """
-
-        for config in self.config_list:
+        print('sicco: running an experiment')
+        for i, config in enumerate(self.config_list):
             # experiment related data is stored in self.experiment
             std_output_list, warnings_list, model_params = self._run_experiment(config)
 
@@ -33,8 +33,10 @@ class ExperimentRunner(object):
             self.log_list.append(log)
 
             self.model_params_list.append(model_params)
+            print('Config {} is complete'.format(i))
 
     def save(self):
+        print('sicco: starting the saving process')
         utils.create_dir_if_it_does_not_exists(self.output_path)
 
         for i, (log, config, model_params) in enumerate(zip(self.log_list, self.config_list, self.model_params_list)):
@@ -47,7 +49,7 @@ class ExperimentRunner(object):
             utils.save_variables(exp_results_dir_path, model_params)
         self._copy_source_files(self.config_list[0].get_subdirectory_path)
 
-    #TODO this function is ugly. Refactor.
+    # TODO this function is ugly. Refactor.
     def _copy_source_files(self, destination_path):
         if self.files_to_backup is None:
             pass
@@ -94,12 +96,12 @@ class ExperimentRunner(object):
         log.exp_output = self.experiment.get_output()
         log.std_output = std_output_list
         log.method_runtimes = self.experiment.function_call_times
-        log.warnings_list = warnings_list
+        log.warnings_list = [str(warning) for warning in warnings_list]
         return log
 
     class Log:
-        def __init__(self):
-            self.uid = utils.get_uuid_hex_string()
+        # def __init__(self):
+        #     self.uid = utils.get_uuid_hex_string()
 
         def __str__(self):
             return str(vars(self))

@@ -1,5 +1,6 @@
 from sicco import experiment_runner, config, experiment
 from sklearn import svm
+import warnings
 
 class SVMConfig(config.Config):
     def __init__(self):
@@ -15,7 +16,7 @@ class SVMConfig(config.Config):
         self.svm_C = 1.5
 
     def get_data(self):
-        return (self.X_train, self.y_train, self.X_test, self.y_test)
+        return self.X_train, self.y_train, self.X_test, self.y_test
 
 
 class SVMExperiment(experiment.Experiment):
@@ -28,8 +29,7 @@ class SVMExperiment(experiment.Experiment):
     def run(self):
         self.clf.fit(self.X_train, self.y_train)
         self.score = self.clf.score(self.X_test, self.y_test)
-        print('hi')
-        # raise Warning('yo')
+        warnings.warn('An example warning')
 
     def get_output(self):
         return {'accuracy': self.score}

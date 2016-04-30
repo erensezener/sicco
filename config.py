@@ -9,7 +9,7 @@ class Config(object):
         }
 
         self._experiment_date = utils.get_time_date_string()
-        self.uid = utils.get_uuid_hex_string()
+        # self.uid = utils.get_uuid_hex_string()
 
     @property
     def get_subdirectory_path(self):
