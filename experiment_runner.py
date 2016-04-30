@@ -90,9 +90,9 @@ class ExperimentRunner(object):
         """
         Runs an experiment with a given config. Captures the warnings and std out writes.
         """
-        utils.debug_log('in _run_experiment', self.debug_mode)
 
-        with capturer.Capturing() as std_output_list:  # capture the stdout of an experiment
+        if self.debug_mode:
+            utils.debug_log('in _run_experiment', self.debug_mode)
             with warnings.catch_warnings(record=True) as warnings_list:
                 utils.debug_log('starting setting up', self.debug_mode)
                 self.experiment.setup(config)
@@ -100,6 +100,12 @@ class ExperimentRunner(object):
                 utils.debug_log('starting running', self.debug_mode)
                 self.experiment.run()
                 utils.debug_log('finished running', self.debug_mode)
+            std_output_list = []
+        else:
+            with capturer.Capturing() as std_output_list:  # capture the stdout of an experiment
+                with warnings.catch_warnings(record=True) as warnings_list:
+                    self.experiment.setup(config)
+                    self.experiment.run()
 
 
         utils.debug_log('exiting _run_experiment', self.debug_mode)
