@@ -1,13 +1,14 @@
-from functools import wraps
 from abc import ABCMeta, abstractmethod
 from sicco import utils
-import time
 
 
 class Experiment(metaclass=ABCMeta):
-    def __init__(self):
+    def __init__(self, output_path='./sicco_logs', files_to_backup='.', debug_mode=False):
         self.function_call_times = {}
         self.uid = utils.get_uuid_hex_string()
+        self.output_path = output_path
+        self.files_to_backup = files_to_backup
+        self.debug_mode = debug_mode
 
     @abstractmethod
     def setup(self, config):
@@ -26,17 +27,4 @@ class Experiment(metaclass=ABCMeta):
         raise NotImplementedError('The abstract methods in Experiment should be overriden')
 
 
-# TODO check if args[0] is an instance of Experiment
-def timeit(func):
-    """
-    This is a decorator for capturing the runtime of arbitrary methods.
-    """
-    @wraps(func)
-    def newfunc(*args, **kwargs):
-        self = args[0]
-        start_time = time.time()
-        func(*args, **kwargs)
-        elapsed_time = time.time() - start_time
-        self.function_call_times[func.__name__] = elapsed_time
 
-    return newfunc

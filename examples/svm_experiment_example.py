@@ -2,6 +2,8 @@ from sicco import experiment_runner, config, experiment
 from sklearn import svm
 import warnings
 
+
+@experiment_runner.config
 class SVMConfig(config.Config):
     def __init__(self):
         super().__init__()
@@ -19,13 +21,14 @@ class SVMConfig(config.Config):
         return self.X_train, self.y_train, self.X_test, self.y_test
 
 
+@experiment_runner.experiment(files_to_backup='..')
 class SVMExperiment(experiment.Experiment):
-    @experiment.timeit
+    @experiment_runner.timeit
     def setup(self, config):
         self.X_train, self.y_train, self.X_test, self.y_test = config.get_data()
         self.clf = svm.SVC(C=config.svm_C)
 
-    @experiment.timeit
+    @experiment_runner.timeit
     def run(self):
         self.clf.fit(self.X_train, self.y_train)
         self.score = self.clf.score(self.X_test, self.y_test)
@@ -36,12 +39,3 @@ class SVMExperiment(experiment.Experiment):
 
     def get_model_params(self):
         return {'classifier': self.clf}
-
-
-config0 = SVMConfig()
-config1 = SVMConfig()
-
-experiment = SVMExperiment()
-runner = experiment_runner.ExperimentRunner(experiment, [config0, config1], files_to_backup='..')
-runner.run()
-runner.save()
