@@ -12,10 +12,11 @@ from functools import wraps
 class ExperimentRunner(object):
     def __init__(self, experiment=None, config_list=None):
         """
-        :param experiment: An object that inherits Experiment
-        :param config_list: A list of objects that inherit Config
-        :param output_path: The path where the experiment results will be dumped
-        :param files_to_backup: A path or a list of paths (both directories or files work) to backup
+        Arguments:
+
+        experiment: An object that inherits sicco.experiment.Experiment
+
+        config_list: A list of objects that inherit sicco.config.Config
         """
         self.experiment = experiment
         self.config_list = config_list if config_list is not None else []
@@ -161,6 +162,8 @@ def config(config_class):
 def experiment(experiment_class=None, **options):
     """
     Decorates an experiment class, runs it and saves the parameters.
+    The Experiment class comes with 4 abstract methods that need to be overriden.
+    Make sure to check the Experiment class to see those methods.
 
     Optional arguments:
 

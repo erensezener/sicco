@@ -2,6 +2,10 @@ from sicco import utils
 
 
 class Config(object):
+    """
+    Please do not edit this class.
+    Just override the constructor from the subclass and set the parameters in __init__().
+    """
     def __init__(self):
         self.description = {
             'code': 'untitled_config',
