@@ -1,4 +1,5 @@
 import functools
+import traceback
 import warnings
 import time
 from sicco import capturer, utils
@@ -30,9 +31,9 @@ class ExperimentRunner(object):
         utils.debug_log('running an experiment', self.experiment.debug_mode)
         for i, config in enumerate(self.config_list):
             # experiment related data is stored in self.experiment
-            std_output_list, warnings_list, model_params = self._run_experiment(config)
+            std_output_list, warnings_list, exception_list, model_params = self._run_experiment(config)
 
-            log = self._create_log_from_experiment_results(std_output_list, warnings_list)
+            log = self._create_log_from_experiment_results(std_output_list, warnings_list, exception_list)
             self.log_list.append(log)
 
             self.model_params_list.append(model_params)
@@ -92,27 +93,26 @@ class ExperimentRunner(object):
         """
         Runs an experiment with a given config. Captures the warnings and std out writes.
         """
-
-        if self.experiment.debug_mode:
-            utils.debug_log('in _run_experiment', self.experiment.debug_mode)
-            with warnings.catch_warnings(record=True) as warnings_list:
-                utils.debug_log('starting setting up', self.experiment.debug_mode)
-                self.experiment.setup(config)
-                utils.debug_log('finished setting up', self.experiment.debug_mode)
-                utils.debug_log('starting running', self.experiment.debug_mode)
-                self.experiment.run()
-                utils.debug_log('finished running', self.experiment.debug_mode)
-            std_output_list = []
-        else:
-            with capturer.Capturing() as std_output_list:  # capture the stdout of an experiment
-                with warnings.catch_warnings(record=True) as warnings_list:
+        exception = None
+        std_output_list = []
+        utils.debug_log('in _run_experiment', self.experiment.debug_mode)
+        with warnings.catch_warnings(record=True) as warnings_list:
+            try:
+                with capturer.Capturing() as std_output_list:  # capture the stdout of an experiment
+                    utils.debug_log('starting setting up', self.experiment.debug_mode)
                     self.experiment.setup(config)
+                    utils.debug_log('finished setting up', self.experiment.debug_mode)
+                    utils.debug_log('starting running', self.experiment.debug_mode)
                     self.experiment.run()
+                    utils.debug_log('finished running', self.experiment.debug_mode)
+            except:
+                exception = traceback.format_exc()
+                print('Sicco handled an exception in {}'.format(config.description))
 
         utils.debug_log('exiting _run_experiment', self.experiment.debug_mode)
-        return std_output_list, warnings_list, self.experiment.get_model_params()
+        return std_output_list, warnings_list, exception, self.experiment.get_model_params()
 
-    def _create_log_from_experiment_results(self, std_output_list, warnings_list):
+    def _create_log_from_experiment_results(self, std_output_list, warnings_list, exception_list):
         """
         Creates a Log object from the experiment outputs.
         """
@@ -121,6 +121,7 @@ class ExperimentRunner(object):
         log.std_output = std_output_list
         log.method_runtimes = self.experiment.function_call_times
         log.warnings_list = [str(warning) for warning in warnings_list]
+        log.exception_list = exception_list
         return log
 
     class Log:
