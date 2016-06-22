@@ -143,7 +143,10 @@ def timeit(func):
         start_time = time.time()
         func(*args, **kwargs)
         elapsed_time = time.time() - start_time
-        self.function_call_times[func.__name__] = elapsed_time
+        if func.__name__ not in self.function_call_times:
+            self.function_call_times[func.__name__] = [elapsed_time]
+        else:
+            self.function_call_times[func.__name__].append(elapsed_time)
 
     return newfunc
 
