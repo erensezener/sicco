@@ -103,8 +103,8 @@ class ExperimentRunner(object):
                     self.experiment.setup(config)
                     utils.debug_log('finished setting up', self.experiment.debug_mode)
                     utils.debug_log('starting running', self.experiment.debug_mode)
-                    self.experiment.run()
-                    utils.debug_log('finished running', self.experiment.debug_mode)
+                self.experiment.run()
+                utils.debug_log('finished running', self.experiment.debug_mode)
             except:
                 exception = traceback.format_exc()
                 print('Sicco handled an exception in {}'.format(config.description))
