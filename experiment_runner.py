@@ -100,9 +100,9 @@ class ExperimentRunner(object):
             try:
                 with capturer.Capturing() as std_output_list:  # capture the stdout of an experiment
                     utils.debug_log('starting setting up', self.experiment.debug_mode)
-                    self.experiment.setup(config)
-                    utils.debug_log('finished setting up', self.experiment.debug_mode)
-                    utils.debug_log('starting running', self.experiment.debug_mode)
+                self.experiment.setup(config)
+                utils.debug_log('finished setting up', self.experiment.debug_mode)
+                utils.debug_log('starting running', self.experiment.debug_mode)
                 self.experiment.run()
                 utils.debug_log('finished running', self.experiment.debug_mode)
             except:
